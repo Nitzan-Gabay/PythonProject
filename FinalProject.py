@@ -236,5 +236,76 @@ def menu():
 
     newMenu.geometry('605x580')
     newMenu.mainloop()
-        
 menu()
+
+#Pandas
+
+import pandas as pd
+import numpy as np
+import csv
+import seaborn as sns
+import matplotlib.pyplot as plt
+#1
+df = pd.read_csv("wishSalesSummer2020.csv")
+display(df)
+#2
+df.shape
+#3
+df.info()
+#4
+del df['product_picture']
+#פקודה מסייעת לפקודה 10
+df['product_color'] = df['product_color'].str.capitalize()
+#5
+newTable = df.filter(['title_orig', 'price', 'retail_price', 'units_sold'], axis = 1)
+display(newTable)
+#6
+newTable["revenue"] = newTable['retail_price']*newTable['units_sold']
+display(newTable)
+#7
+newTable["profit"] = ((newTable['retail_price'] - newTable['price']) * newTable['units_sold'])
+display(newTable)
+#8
+newTable.sort_values(by = 'profit', ascending = False)
+#9
+newTable2 = newTable[newTable['profit']<0]
+lost = newTable2['profit'].sum()
+print("The company lost for aug 2020 is: " + str(lost))
+#10
+newTable3 = df.filter(['retail_price', 'units_sold','product_color'], axis = 1)
+newTable4 = newTable3.groupby(['product_color'])[['units_sold']].sum()
+newTable4.sort_values(by = 'units_sold', ascending = False)
+#11
+newTable['merchant_name'] = df['merchant_name']
+a = newTable.groupby(['merchant_name'])[['profit']].sum()
+a.sort_values(by = 'profit', ascending = False)
+meanProfit = round(a['profit'].mean())
+print("The mean profit of every merchant is : " + str(meanProfit))
+#12
+df.groupby(['product_size'])[['units_sold']].sum()
+df.groupby(['product_size'])[['units_sold']].sum().max()
+#13
+newTable["difference"] = (newTable['retail_price'] - newTable['price'])
+newTable.sort_values(by = 'difference', ascending = False)
+#14
+merchants = df.filter(['merchant_name', 'merchant_rating_count', 'merchant_rating'], axis = 1)
+display(merchants)
+#15
+ratingTable = merchants[ merchants['merchant_rating_count'] > 50]
+ratingTable.sort_values(by = 'merchant_rating', ascending = False)
+#16
+merchantMean = ratingTable['merchant_rating'].mean()
+print("The mean merchant_rating of every merchant is : " + str(merchantMean))
+#17
+newTable[['units_sold','retail_price']].agg(['min','max','mean','std']).round()
+#18
+KamaOd = df.filter(['title_orig', 'countries_shipped_to','product_color','product_size'], axis = 1)
+display(KamaOd[KamaOd.countries_shipped_to == KamaOd.countries_shipped_to.max()])
+
+#seaborn
+cols = pd.read_csv("wishSalesSummer2020.csv").columns
+wish = pd.read_csv("wishSalesSummer2020.csv")
+#19
+sns.relplot(data=wish, x="origin_country", y="units_sold").set(title='Units sales per country')
+#20
+sns.relplot(x="origin_country",y="product_size",data=wish).set(title='Size per coutry')
